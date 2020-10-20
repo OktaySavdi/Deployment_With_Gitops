@@ -1,0 +1,20 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: $name
+  namespace: $namespaces
+spec:
+  selector:
+    matchLabels:
+      app: $app
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: $app
+    spec:
+      containers:
+        - name: $name
+          image: quay.io/oktaysavdi/istioproject
+          ports:
+            - containerPort: 8080
