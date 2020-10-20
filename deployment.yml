@@ -15,6 +15,6 @@ spec:
     spec:
       containers:
         - name: $name
-          image: quay.io/oktaysavdi/istioproject
+          image: quay.io/oktaysavdi/istioproject:v1
           ports:
             - containerPort: 8080
