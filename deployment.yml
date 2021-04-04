@@ -9,7 +9,7 @@ metadata:
   labels:
     app: hello
     env: $env
-  name: $name
+  name: hello
   namespace: $namespace
 spec:
   replicas: 1
@@ -25,7 +25,7 @@ spec:
         env: $env
     spec:
       containers:
-      - image: quay.io/oktaysavdi/istioproject
+      - image: $image
         name: istioproject
         ports:
         - containerPort: $port
@@ -33,7 +33,7 @@ spec:
 kind: Service
 apiVersion: v1
 metadata:
-  name: $name
+  name: hello
   namespace: $namespace
   labels:
     app: hello
@@ -62,7 +62,7 @@ spec:
   path: /istio
   to:
     kind: Service
-    name: $name
+    name: hello
     weight: 100
   port:
     targetPort: $port-tcp
