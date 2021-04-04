@@ -1,33 +1,69 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: $namespace
+---
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  labels:
+    app: hello
+    env: $env
   name: $name
-  namespace: $namespaces
+  namespace: $namespace
 spec:
+  replicas: 1
   selector:
     matchLabels:
-      app: $app
-  replicas: 1
+      app: hello
+      env: $env
+  strategy: {}
   template:
     metadata:
       labels:
-        app: $app
+        app: hello
+        env: $env
     spec:
       containers:
-        - name: $name
-          image: quay.io/oktaysavdi/istioproject
-          ports:
-            - containerPort: 8080
+      - image: quay.io/oktaysavdi/istioproject
+        name: istioproject
+        ports:
+        - containerPort: $port
 ---
-apiVersion: v1
 kind: Service
+apiVersion: v1
 metadata:
-  name: $app
+  name: $name
+  namespace: $namespace
+  labels:
+    app: hello
+    env: $env
 spec:
   ports:
-  - port: 8080
-    protocol: TCP
-    targetPort: 8080
+    - name: 8080-tcp
+      protocol: TCP
+      port: $port
+      targetPort: $port
   selector:
-    app: $app
+    app: hello
+    env: $env
   type: ClusterIP
+  sessionAffinity: None
+---
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: gitops-tst-route
+  namespace: $namespace
+  labels:
+    app: hello
+    env: $env
+spec:
+  path: /istio
+  to:
+    kind: Service
+    name: $name
+    weight: 100
+  port:
+    targetPort: $port-tcp
+  wildcardPolicy: None
