@@ -1,0 +1,37 @@
+pipeline {
+	//Servers
+	agent any
+	
+	//Parameters
+	parameters {
+		string ( name: 'NAMESPACE', description: 'Enter the name of the Project to be installed' )
+		string ( name: 'envValue' , description: 'Enter env values'                              )
+	}
+	
+	stages{
+	    stage('control') {
+            steps {
+                script {
+                    if (!params.NAMESPACE.isEmpty()) { 
+						if (params.envValue.isEmpty()) { error('ENV Field is Empty') }
+                    }
+					else { error('Project Field Is Empty') }
+                }
+            }
+        }
+		stage('action') {
+			steps {
+				script {
+					git branch:'main', url:'https://github.com/OktaySavdi/Deployment_With_Gitops.git'
+					withCredentials([string(credentialsId: "cred_id", variable: 'TOKEN')]) {
+						sh '''
+							oc login --token ${TOKEN} https://api.myocpcluster.mydomain.com.tr:6443 --insecure-skip-tls-verify=true
+							ls -lah
+							helm install gitops-qa ./ --values ./values.yaml --namespace=${NAMESPACE} --create-namespace --set deployments.envValue=${envValue}
+						'''
+					}
+				}
+			}
+		}
+	}
+}
