@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  labels:
+    app: {{ .Values.labels.app }}
+  name: {{ .Values.deployments.name }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  strategy:
+    rollingUpdate: 
+      maxSurge: 25%
+      maxUnavailable: 25%
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: {{ .Values.labels.app }}
+  template:
+    metadata:
+      labels:
+        app: {{ .Values.labels.app }}
+    spec:
+      containers:
+      - image: {{ .Values.images.image }}:{{ .Values.images.tag }}
+        env:
+        - name: {{ .Values.deployments.envName }}
+          value: {{ .Values.deployments.envValue }}
+        name: {{ .Values.deployments.containerName }}
+        resources:
+          limits:
+            memory: {{ .Values.resources.limits.memory }}
+            cpu: {{ .Values.resources.limits.cpu }}
+          requests:
+            memory: {{ .Values.resources.requests.memory }}
+            cpu: {{ .Values.resources.requests.cpu }}
+        ports:
+        - containerPort: {{ .Values.deployments.containerPort }}
