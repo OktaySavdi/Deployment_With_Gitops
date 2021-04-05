@@ -1,0 +1,16 @@
+kind: Service
+apiVersion: v1
+metadata:
+  name: {{ .Values.deployments.name }}-svc
+  labels:
+    app: {{ .Values.labels.app }}
+spec:
+  ports:
+    - name: {{ .Values.service.name }}
+      protocol: TCP
+      port: {{ .Values.service.port }}
+      targetPort: {{ .Values.service.targetPort }}
+  selector:
+    app: {{ .Values.labels.app }}
+  type: {{ .Values.service.type }}
+  sessionAffinity: None
