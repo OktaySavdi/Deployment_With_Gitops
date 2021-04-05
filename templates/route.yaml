@@ -1,0 +1,15 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: {{ .Values.deployments.name }}-route
+  labels:
+    app: {{ .Values.labels.app }}
+spec:
+  path: /istio
+  to:
+    kind: Service
+    name: {{ .Values.deployments.name }}-svc
+    weight: 100
+  port:
+    targetPort: {{ .Values.service.name }}
+  wildcardPolicy: None
